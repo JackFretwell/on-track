@@ -2,6 +2,7 @@ import argparse
 import json
 import sys
 from models import RawEvent
+from util import trust
 import os
 import stomp
 import db
@@ -10,7 +11,17 @@ from dotenv import load_dotenv
 
 class Listener(stomp.ConnectionListener):
     def on_message(self, frame):
-        print('received a message "%s"' % frame.body)
+        headers, message_raw = frame.headers, frame.body
+        parsed_body = json.loads(message_raw)
+        
+        if "TRAIN_MVT_" in headers["destination"]:
+            train_id, msg_type = trust.extract_trust_fields(parsed_body)
+            if train_id != "" and msg_type != "":
+                print(train_id, msg_type)
+            else:
+                return
+        else:
+            print("Unknown destination: ", headers["destination"])
 
 def main():
     load_dotenv()
@@ -20,6 +31,7 @@ def main():
         try:
             conn.connect(os.getenv('NR_USER'), os.getenv('NR_PASSWORD'), wait=True)
             conn.subscribe(destination='/topic/TD_ALL_SIG_AREA', id=1, ack='auto')
+            conn.subscribe(destination='/topic/TRAIN_MVT_ALL_TOC', id=2, ack='auto')
             while conn.is_connected():
                 sleep(1)
         except Exception as e:
