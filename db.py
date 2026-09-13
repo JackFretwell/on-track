@@ -15,3 +15,10 @@ def get_engine():
 
 def create_session(engine):
     return Session(engine)
+
+def create_raw_event(session, type, id, pl):
+    session.add(RawEvent(
+        msg_type=type,
+        train_id=id,
+        payload=pl
+    ))

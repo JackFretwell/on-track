@@ -27,13 +27,12 @@ def print_trust_frame(parsed):
 
 
 def extract_trust_fields(parsed):
-    for a in parsed:
-        try:
-            body = a["body"]
-            header = a["header"]
-            train_id = body.get("train_id", '')
-            msg_type = header.get("msg_type")
-            return train_id, msg_type
-        except Exception as e:
-            print("Malformed message caused the following error:", e)
-            return "", ""
+    try:
+        body = parsed["body"]
+        header = parsed["header"]
+        train_id = body.get("train_id", '')
+        msg_type = header.get("msg_type", '')
+        return train_id, msg_type
+    except Exception as e:
+        print("Malformed message caused the following error:", e)
+        return "", ""
