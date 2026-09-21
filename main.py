@@ -37,9 +37,9 @@ class Listener(stomp.ConnectionListener):
                 for msg in parsed_body:
                     uk_datetime, area_id, description, from_berth, to_berth = td.extract_td_fields(msg)
                     #td.print_td_frame(msg)
-
+                session.commit
             finally:
-                #session.commit()
+                #session.close()
         else:
             print("Unknown destination: ", headers["destination"])
 
