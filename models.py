@@ -11,3 +11,13 @@ class RawEvent(Base):
     msg_type: Mapped[str] = mapped_column(Text)
     train_id: Mapped[str] = mapped_column(Text, nullable=True)
     payload: Mapped[dict] = mapped_column(JSON)
+
+class Location(Base):
+    __tablename__ = "locations"
+    id: Mapped[int] = mapped_column(BigInteger, primary_key=True)
+    stanox: Mapped[str] = mapped_column(Text, index=True, nullable=True, unique=True)
+    uic: Mapped[str] = mapped_column(Text, nullable=True)
+    three_alpha: Mapped[str] = mapped_column(Text, nullable=True)
+    tiploc: Mapped[str] = mapped_column(Text, nullable=True)
+    nlc : Mapped[str] = mapped_column(Text, nullable=True)
+    nlc_description: Mapped[str] = mapped_column(Text, nullable=True)
