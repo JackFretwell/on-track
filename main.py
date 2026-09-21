@@ -2,7 +2,7 @@ import argparse
 import json
 import sys
 from models import RawEvent
-from util import trust
+from util import trust, td
 import os
 import stomp
 import db
@@ -22,6 +22,7 @@ class Listener(stomp.ConnectionListener):
                 session = db.create_session(self.engine)
                 for msg in parsed_body:
                     train_id, msg_type = trust.extract_trust_fields(msg)
+                    #trust.print_trust_frame(msg)
                     if train_id != "" and msg_type != "":
                         db.create_raw_event(session, msg_type, train_id, msg)
                     else:    
@@ -30,6 +31,15 @@ class Listener(stomp.ConnectionListener):
                 session.commit()
             finally:
                 session.close()
+        elif "TD_" in headers["destination"]:
+            try:
+                session = db.create_session(self.engine)
+                for msg in parsed_body:
+                    uk_datetime, area_id, description, from_berth, to_berth = td.extract_td_fields(msg)
+                    #td.print_td_frame(msg)
+
+            finally:
+                #session.commit()
         else:
             print("Unknown destination: ", headers["destination"])
 
